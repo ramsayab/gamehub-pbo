@@ -1,5 +1,4 @@
 public class Player {
-    // Enkapsulasi: Data private
     private String id;
     private int totalScore;
 
@@ -7,7 +6,6 @@ public class Player {
         this.totalScore = 0;
     }
 
-    // Setter dan Getter (Materi PPT Slide 26)
     public void setID(String id) {
         this.id = id;
     }

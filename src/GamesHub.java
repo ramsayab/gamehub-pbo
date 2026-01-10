@@ -2,24 +2,19 @@ import javax.swing.*;
 import java.awt.*;
 
 public class GamesHub {
-
-    // Global Player Object
     static Player player = new Player();
     static JLabel scoreLabel;
 
     public static void main(String[] args) {
         
-        // MATERI SLIDE 99: Membuat Frame Utama
-        JFrame frame = new JFrame("Games Hub - UAS OOP");
-        frame.setSize(300, 500);
+        JFrame frame = new JFrame("Games Hub");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setSize(new Dimension(600, 500));
         frame.setLocationRelativeTo(null);
-        
-        // MATERI SLIDE 172: GridLayout
-        frame.setLayout(new GridLayout(7, 1, 5, 5));
-        
-        // Komponen Menu
-        JLabel title = new JLabel("=== GAMES HUB ===", SwingConstants.CENTER);
+
+        frame.setLayout(new GridLayout(4, 2, 5, 5));
+
+        JLabel title = new JLabel("GAMES HUB", SwingConstants.CENTER);
         title.setFont(new Font("Arial", Font.BOLD, 20));
         
         scoreLabel = new JLabel("Total Score: 0", SwingConstants.CENTER);
@@ -30,12 +25,10 @@ public class GamesHub {
         JButton btnAim = new JButton("4. Aim Trainer");
         JButton btnReact = new JButton("5. Reaction Test");
         JButton btnExit = new JButton("0. Keluar");
-
-        // === Event Handling Menu ===
         
         // 1. Daftar Akun
         btnAkun.addActionListener(e -> {
-            String id = JOptionPane.showInputDialog(frame, "Masukkan Nama/ID:");
+            String id = JOptionPane.showInputDialog(frame, "Masukkan ID:");
             if (id != null && !id.trim().isEmpty()) {
                 player.setID(id);
                 JOptionPane.showMessageDialog(frame, "Selamat Datang, " + id + "!");
@@ -48,7 +41,7 @@ public class GamesHub {
                 new GuessingGame(player).startGame();
             }
         });
-
+        
         // 3. Snake Game
         btnSnake.addActionListener(e -> {
             if (cekAkun(frame)) {
