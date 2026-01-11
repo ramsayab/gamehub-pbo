@@ -9,14 +9,13 @@ import java.util.Random;
 public class GamesHub {
 
     abstract static class GameFeature {
-        abstract void play(); 
+        abstract void play();
     }
 
     static Player player = new Player();
     static JLabel scoreLabel;
 
     public static void main(String[] args) {
-        // MATERI 13: JFrame
         JFrame frame = new JFrame("Games Hub - UAS OOP");
         frame.setSize(500, 350);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -47,8 +46,7 @@ public class GamesHub {
             }
         });
 
-        // IMPLEMENTASI POLYMORPHISM:
-        // Kita memanggil satu method 'launchGame' yang bisa menerima berbagai jenis game
+
         btnGuess.addActionListener(e -> launchGame(new GuessingGame(), frame));
         btnRush.addActionListener(e ->  launchGame(new NumberRush(), frame));
         btnAim.addActionListener(e ->   launchGame(new AimTrainer(), frame));
@@ -122,7 +120,7 @@ public class GamesHub {
             numbers = new ArrayList<>();
             for (int i = 1; i <= 9; i++) numbers.add(i);
             Collections.shuffle(numbers);
-
+            
             currentTarget = 1;
             frame = new JFrame("Urutkan 1 - 9");
             frame.setSize(300, 300);
@@ -158,50 +156,59 @@ public class GamesHub {
 
 
     static class AimTrainer extends GameFeature {
-        private int s = 0, time = 10; 
-        private Timer t;
+        private int score = 0;
+        private int time = 10;
+        private Timer timer;
 
         @Override
         void play() {
-            JFrame f = new JFrame("Click Fast!"); 
-            f.setSize(600, 400); 
-            f.setLocationRelativeTo(null); 
-            f.setLayout(null);
+            score = 0;
+            time = 10;
 
-            JLabel l = new JLabel("Time: " + time); 
-            l.setBounds(10, 10, 100, 20); 
-            f.add(l);
+            JFrame frame = new JFrame("Aim Trainer");
+            frame.setSize(600, 400);
+            frame.setLocationRelativeTo(null);
+            frame.setLayout(null);
 
-            JButton b = new JButton("X"); 
-            b.setBackground(Color.RED); 
-            b.setForeground(Color.WHITE); 
-            b.setBounds(200, 200, 50, 50);
+            JLabel label = new JLabel("Waktu: " + time);
+            label.setBounds(20, 10, 100, 20);
+            frame.add(label);
+
+            JButton target = new JButton();
+            target.setBackground(Color.RED);
+            target.setBounds(250, 150, 30, 30);
+            target.setFocusable(false);
             
-            b.addActionListener(e -> { 
-                if (time > 0) { 
-                    s++; 
-                    b.setBounds(new Random().nextInt(500), new Random().nextInt(300)+30, 50, 50); 
+            target.addActionListener(e -> {
+                if (time > 0) {
+                    score++;
+                    int x = new Random().nextInt(540);
+                    int y = new Random().nextInt(320) + 30;
+                    target.setLocation(x, y);
                 }
             });
-            f.add(b); 
-            f.setVisible(true);
+            frame.add(target);
+            frame.setVisible(true);
 
-            t = new Timer(1000, e -> {
-                time--; 
-                l.setText("Time: " + time);
-                if (time <= 0) { 
-                    t.stop(); 
-                    b.setEnabled(false); 
-                    JOptionPane.showMessageDialog(f, "Skor: " + s); 
-                    player.addScore(s); 
-                    f.dispose(); 
+            timer = new Timer(1000, e -> {
+                time--;
+                label.setText("Waktu: " + time);
+                
+                if (time <= 0) {
+                    timer.stop();
+                    target.setEnabled(false);
+                    JOptionPane.showMessageDialog(frame, "Waktu Habis! Skor: " + score);
+                    player.addScore(score);
+                    frame.dispose();
+                    System.gc();
+                }
+            });
+            timer.start();
+            frame.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) { 
+                    timer.stop(); 
                     System.gc(); 
                 }
-            }); 
-            t.start();
-            
-            f.addWindowListener(new WindowAdapter() { 
-                public void windowClosing(WindowEvent e) { t.stop(); System.gc(); }
             });
         }
     }
@@ -218,10 +225,9 @@ public class GamesHub {
             f.setSize(400, 400); 
             f.setLocationRelativeTo(null);
 
-            JPanel p = new JPanel(); 
-            p.setBackground(Color.RED); 
+            JPanel p = new JPanel();
+            p.setBackground(Color.RED);
             p.add(new JLabel("KLIK SAAT HIJAU!"));
-
             
             p.addMouseListener(new MouseAdapter() { 
                 public void mousePressed(MouseEvent e) {
