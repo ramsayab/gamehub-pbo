@@ -7,13 +7,21 @@ import java.util.Collections;
 import java.util.Random;
 
 public class GamesHub {
+    
+    static Player player = new Player();
+    static JLabel scoreLabel;
+
 
     abstract static class GameFeature {
         abstract void play();
     }
-
-    static Player player = new Player();
-    static JLabel scoreLabel;
+    static void launchGame(GameFeature game, JFrame p) {
+        if (player.getID() == null) {
+            JOptionPane.showMessageDialog(p, "Daftar akun dulu!", "Warning", JOptionPane.WARNING_MESSAGE);
+        } else {
+            game.play();
+        }
+    }
 
     public static void main(String[] args) {
         JFrame frame = new JFrame("Games Hub - UAS OOP");
@@ -46,14 +54,13 @@ public class GamesHub {
             }
         });
 
-
         btnGuess.addActionListener(e -> launchGame(new GuessingGame(), frame));
         btnRush.addActionListener(e ->  launchGame(new NumberRush(), frame));
         btnAim.addActionListener(e ->   launchGame(new AimTrainer(), frame));
         btnReact.addActionListener(e -> launchGame(new ReactionTest(), frame));
 
         btnExit.addActionListener(e -> {
-            System.out.println("Membersihkan memori...");
+            System.out.println("memroi dibersihakn");
             System.gc();
             System.exit(0);
         });
@@ -61,9 +68,9 @@ public class GamesHub {
         new Timer(1000, e -> scoreLabel.setText("Score: " + player.getScore())).start();
 
         mainPanel.add(titleLabel); mainPanel.add(scoreLabel);
-        mainPanel.add(btnAkun);    mainPanel.add(btnGuess);
-        mainPanel.add(btnRush);    mainPanel.add(btnAim);
-        mainPanel.add(btnReact);   mainPanel.add(btnExit);
+        mainPanel.add(btnAkun); mainPanel.add(btnGuess);
+        mainPanel.add(btnRush); mainPanel.add(btnAim);
+        mainPanel.add(btnReact); mainPanel.add(btnExit);
 
         frame.add(mainPanel);
         frame.setVisible(true);
@@ -71,13 +78,7 @@ public class GamesHub {
 
 
 
-    static void launchGame(GameFeature game, JFrame p) {
-        if (player.getID() == null) {
-            JOptionPane.showMessageDialog(p, "Daftar akun dulu!", "Warning", JOptionPane.WARNING_MESSAGE);
-        } else {
-            game.play();
-        }
-    }
+
 
 
     static class GuessingGame extends GameFeature {
