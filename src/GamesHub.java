@@ -145,6 +145,7 @@ public class GamesHub {
             System.exit(0);
         });
 
+        new Timer(1000, e -> scoreLabel.setText("Score: " + player.getScore())).start();
 
         menuPanel.add(btnAkun);
         menuPanel.add(btnGuess);
