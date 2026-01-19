@@ -11,7 +11,6 @@ public class GamesHub {
     static Player player = new Player();
     static JLabel scoreLabel;
 
-
     abstract static class GameFeature {
         abstract void play();
     }
@@ -23,28 +22,110 @@ public class GamesHub {
         }
     }
 
+    private static ImageIcon loadIcon(String path, int height) {
+        ImageIcon original = new ImageIcon(path);
+        if (original.getIconWidth() == -1) {
+            return null;
+        }
+        Image img = original.getImage();
+        Image scaled = img.getScaledInstance(height, height, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
+
+    private static JButton createMenuButton(String text, String icon) {
+        Color normal = new Color(52, 152, 219);
+        Color hover  = new Color(41, 128, 185);
+
+        JButton b = new JButton();
+
+        b.setLayout(new BorderLayout());
+
+        JLabel lblText = new JLabel(text);
+        lblText.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+        lblText.setForeground(Color.WHITE);
+        lblText.setBorder(new EmptyBorder(0, 10, 0, 0));
+
+        JLabel lblIcon = new JLabel(loadIcon("assets/" + icon, 28));
+        lblIcon.setBorder(new EmptyBorder(0, 0, 0, 10));
+
+        b.add(lblText, BorderLayout.WEST);
+        b.add(lblIcon, BorderLayout.EAST);
+
+        b.setBackground(normal);
+        b.setFocusPainted(false);
+        b.setCursor(new Cursor(Cursor.HAND_CURSOR));
+        
+        b.setBorder(new EmptyBorder(10, 10, 10, 10)); 
+
+        b.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseEntered(java.awt.event.MouseEvent e) {
+                b.setBackground(hover);
+            }
+            public void mouseExited(java.awt.event.MouseEvent e) {
+                b.setBackground(normal);
+            }
+        });
+
+        return b;
+    }
+
+
+
     public static void main(String[] args) {
         JFrame frame = new JFrame("Games Hub - UAS OOP");
-        frame.setSize(500, 350);
+        frame.setSize(520, 380);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setLocationRelativeTo(null);
 
-        JPanel mainPanel = new JPanel();
-        mainPanel.setBorder(new EmptyBorder(15, 30, 15, 30)); 
-        
-        mainPanel.setLayout(new GridLayout(4, 2, 10, 10));
+        JPanel root = new JPanel() {
+            protected void paintComponent(Graphics g) {
+                super.paintComponent(g);
+                Graphics2D g2 = (Graphics2D) g;
+                g2.setPaint(new GradientPaint(
+                        0, 0, new Color(44, 62, 80),
+                        0, getHeight(), new Color(52, 73, 94)));
+                g2.fillRect(0, 0, getWidth(), getHeight());
+            }
+        };
+        root.setLayout(new BorderLayout(15, 15));
+        root.setBorder(new EmptyBorder(20, 30, 20, 30));
 
-        JLabel titleLabel = new JLabel(" MENU ", SwingConstants.CENTER);
-        titleLabel.setFont(new Font("Arial", Font.BOLD, 16));
-        
-        scoreLabel = new JLabel("Score: 0", SwingConstants.CENTER);
-        
-        JButton btnAkun = new JButton("1. Daftar Akun");
-        JButton btnGuess = new JButton("2. Tebak Angka");
-        JButton btnRush = new JButton("3. Number Rush");
-        JButton btnAim = new JButton("4. Aim Trainer");
-        JButton btnReact = new JButton("5. Reaction Test");
-        JButton btnExit = new JButton("Keluar");
+        JPanel header = new JPanel(new GridLayout(2, 1));
+        header.setOpaque(false);
+
+        JLabel title = new JLabel("GAMES HUB");
+        title.setFont(new Font("Segoe UI", Font.BOLD, 26));
+        title.setForeground(Color.WHITE);
+
+        JLabel subtitle = new JLabel("Object Oriented Programming Project");
+        subtitle.setFont(new Font("Segoe UI", Font.PLAIN, 12));
+        subtitle.setForeground(new Color(200, 200, 200));
+
+        header.add(title);
+        header.add(subtitle);
+
+        JPanel menuPanel = new JPanel(new GridLayout(3, 2, 12, 12));
+        menuPanel.setOpaque(false);
+
+        JButton btnAkun   = createMenuButton("Daftar Akun", "user.png");
+        JButton btnGuess  = createMenuButton("Tebak Angka", "guess.png");
+        JButton btnRush   = createMenuButton("Number Rush", "rush.png");
+        JButton btnAim    = createMenuButton("Aim Trainer", "aim.png");
+        JButton btnReact  = createMenuButton("Reaction Test", "react.png");
+        JButton btnExit   = createMenuButton("Keluar", "exit.png");
+
+        JPanel footer = new JPanel(new BorderLayout());
+        footer.setOpaque(false);
+
+        scoreLabel = new JLabel("Score: 0");
+        scoreLabel.setForeground(Color.WHITE);
+        scoreLabel.setFont(new Font("Segoe UI", Font.PLAIN, 14));
+
+        JLabel hint = new JLabel("Ready to play");
+        hint.setForeground(new Color(180, 180, 180));
+
+        footer.add(scoreLabel, BorderLayout.WEST);
+        footer.add(hint, BorderLayout.EAST);
 
         btnAkun.addActionListener(e -> {
             String id = JOptionPane.showInputDialog(frame, "Masukkan Nama:");
@@ -55,58 +136,64 @@ public class GamesHub {
         });
 
         btnGuess.addActionListener(e -> launchGame(new GuessingGame(), frame));
-        btnRush.addActionListener(e ->  launchGame(new NumberRush(), frame));
-        btnAim.addActionListener(e ->   launchGame(new AimTrainer(), frame));
+        btnRush.addActionListener(e -> launchGame(new NumberRush(), frame));
+        btnAim.addActionListener(e -> launchGame(new AimTrainer(), frame));
         btnReact.addActionListener(e -> launchGame(new ReactionTest(), frame));
 
         btnExit.addActionListener(e -> {
-            System.out.println("memroi dibersihakn");
             System.gc();
             System.exit(0);
         });
 
-        new Timer(1000, e -> scoreLabel.setText("Score: " + player.getScore())).start();
 
-        mainPanel.add(titleLabel); mainPanel.add(scoreLabel);
-        mainPanel.add(btnAkun); mainPanel.add(btnGuess);
-        mainPanel.add(btnRush); mainPanel.add(btnAim);
-        mainPanel.add(btnReact); mainPanel.add(btnExit);
+        menuPanel.add(btnAkun);
+        menuPanel.add(btnGuess);
+        menuPanel.add(btnRush);
+        menuPanel.add(btnAim);
+        menuPanel.add(btnReact);
+        menuPanel.add(btnExit);
 
-        frame.add(mainPanel);
+        root.add(header, BorderLayout.NORTH);
+        root.add(menuPanel, BorderLayout.CENTER);
+        root.add(footer, BorderLayout.SOUTH);
+
+        frame.setContentPane(root);
         frame.setVisible(true);
+
     }
 
 
-
-
-
-
-    static class GuessingGame extends GameFeature {
+static class GuessingGame extends GameFeature {
         @Override
         void play() {
-            int target = new Random().nextInt(10) + 1;
-            int attempts = 4;
+            UIManager.put("OptionPane.background", new Color(44, 62, 80));
+            UIManager.put("Panel.background", new Color(44, 62, 80));
+            UIManager.put("OptionPane.messageForeground", Color.WHITE);
+
+            int target = new Random().nextInt(10) + 1, attempts = 4;
             try {
                 while (attempts > 0) {
-                    String input = JOptionPane.showInputDialog(null, "Tebak 1-10\nNyawa: " + attempts);
-                    if (input == null) break;
+                    JPanel p = new JPanel(new BorderLayout());
+                    JTextField txt = new JTextField();
+                    txt.setFont(new Font("Segoe UI", Font.BOLD, 24));
+                    txt.setHorizontalAlignment(SwingConstants.CENTER);
                     
-                    int guess = Integer.parseInt(input);
+                    p.add(new JLabel("<html><h2 style='color:#3498db'>Tebak 1-10</h2>Sisa Nyawa: " + attempts + "</html>", SwingConstants.CENTER), BorderLayout.NORTH);
+                    p.add(txt, BorderLayout.CENTER);
+
+                    if (JOptionPane.showConfirmDialog(null, p, "Game", JOptionPane.OK_CANCEL_OPTION, -1) != 0) break;
+
+                    int guess = Integer.parseInt(txt.getText());
                     if (guess == target) {
-                        JOptionPane.showMessageDialog(null, "Benar! (+10 Poin)");
-                        player.addScore(10);
-                        return;
-                    } 
-                    attempts--;
-                    String hint = (guess < target) ? "Kekecilan" : "Kebesaran";
-                    JOptionPane.showMessageDialog(null, hint + "! Sisa: " + attempts);
+                        JOptionPane.showMessageDialog(null, "🏆 BENAR! (+10 Poin)");
+                        player.addScore(10); return;
+                    }
+                    JOptionPane.showMessageDialog(null, (guess < target ? "📈 Kekecilan" : "📉 Kebesaran") + "! Sisa: " + (--attempts));
                 }
-                JOptionPane.showMessageDialog(null, "Gagal! Angka: " + target);
-            } catch (NumberFormatException e) {
-                JOptionPane.showMessageDialog(null, "Error: Masukkan Angka!");
-            } finally { 
-                System.gc(); 
-            }
+                JOptionPane.showMessageDialog(null, "💀 Kalah! Angka: " + target);
+            } catch (Exception e) {
+                JOptionPane.showMessageDialog(null, "⚠️ Masukkan Angka!");
+            } finally { System.gc(); }
         }
     }
 
@@ -157,110 +244,119 @@ public class GamesHub {
 
 
     static class AimTrainer extends GameFeature {
-        private int score = 0;
-        private int time = 10;
-        private Timer timer;
+        Timer gameTimer, moveTimer;
+        int score, time;
 
         @Override
         void play() {
-            score = 0;
-            time = 10;
+            score = 0; time = 15;
+            JFrame f = new JFrame("Aim Trainer");
+            f.setSize(600, 450);
+            f.setLocationRelativeTo(null);
+            f.setLayout(null);
+            f.getContentPane().setBackground(new Color(44, 62, 80));
 
-            JFrame frame = new JFrame("Aim Trainer");
-            frame.setSize(600, 400);
-            frame.setLocationRelativeTo(null);
-            frame.setLayout(null);
+            JLabel info = new JLabel("Score: 0  |  Time: " + time, SwingConstants.CENTER);
+            info.setFont(new Font("Segoe UI", Font.BOLD, 20));
+            info.setForeground(Color.WHITE);
+            info.setBounds(0, 10, 580, 30);
+            f.add(info);
 
-            JLabel label = new JLabel("Waktu: " + time);
-            label.setBounds(20, 10, 100, 20);
-            frame.add(label);
+            JButton tgt = new JButton();
+            tgt.setBackground(new Color(231, 76, 60));
+            tgt.setBounds(250, 200, 40, 40);
+            tgt.setFocusable(false);
+            tgt.setBorderPainted(false);
+            f.add(tgt);
 
-            JButton target = new JButton();
-            target.setBackground(Color.RED);
-            target.setBounds(250, 150, 30, 30);
-            target.setFocusable(false);
-            
-            target.addActionListener(e -> {
-                if (time > 0) {
-                    score++;
-                    int x = new Random().nextInt(540);
-                    int y = new Random().nextInt(320) + 30;
-                    target.setLocation(x, y);
-                }
+            ActionListener mover = e -> tgt.setLocation(new Random().nextInt(530), new Random().nextInt(340) + 50);
+            moveTimer = new Timer(2000, mover);
+
+            tgt.addActionListener(e -> {
+                score++;
+                info.setText("Score: " + score + "  |  Time: " + time);
+                mover.actionPerformed(null);
+                moveTimer.restart();
             });
-            frame.add(target);
-            frame.setVisible(true);
 
-            timer = new Timer(1000, e -> {
-                time--;
-                label.setText("Waktu: " + time);
-                
-                if (time <= 0) {
-                    timer.stop();
-                    target.setEnabled(false);
-                    JOptionPane.showMessageDialog(frame, "Waktu Habis! Skor: " + score);
+            gameTimer = new Timer(1000, e -> {
+                if (--time <= 0) {
+                    gameTimer.stop(); moveTimer.stop(); f.dispose();
+                    JOptionPane.showMessageDialog(null, "Time's up! Final Score: " + score);
                     player.addScore(score);
-                    frame.dispose();
                     System.gc();
-                }
+                } else info.setText("Score: " + score + "  |  Time: " + time);
             });
-            timer.start();
-            frame.addWindowListener(new WindowAdapter() {
-                public void windowClosing(WindowEvent e) { 
-                    timer.stop(); 
-                    System.gc(); 
-                }
+
+            f.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) { gameTimer.stop(); moveTimer.stop(); System.gc(); }
             });
+
+            f.setVisible(true);
+            moveTimer.start();
+            gameTimer.start();
         }
     }
 
 
-    static class ReactionTest extends GameFeature {
-        private long start; 
-        private boolean green = false; 
-        private Timer w;
+static class ReactionTest extends GameFeature {
+        private long start;
+        private boolean green = false;
+        private Timer w, s;
 
         @Override
         void play() {
-            JFrame f = new JFrame("Reaction"); 
-            f.setSize(400, 400); 
+            JFrame f = new JFrame("Reaction");
+            f.setSize(400, 400);
             f.setLocationRelativeTo(null);
 
-            JPanel p = new JPanel();
+            JPanel p = new JPanel(new GridBagLayout());
             p.setBackground(Color.RED);
-            p.add(new JLabel("KLIK SAAT HIJAU!"));
             
-            p.addMouseListener(new MouseAdapter() { 
+            JLabel l = new JLabel("KLIK SAAT HIJAU!");
+            l.setFont(new Font("Segoe UI", Font.BOLD, 24));
+            l.setForeground(Color.WHITE);
+            p.add(l);
+
+            s = new Timer(400, e -> {
+                p.setBackground(new Color(new Random().nextInt(255), new Random().nextInt(150), new Random().nextInt(255)));
+            });
+            s.start();
+
+            p.addMouseListener(new MouseAdapter() {
                 public void mousePressed(MouseEvent e) {
-                    if (green) { 
-                        long r = System.currentTimeMillis() - start; 
-                        JOptionPane.showMessageDialog(f, r + " ms! (+10)"); 
-                        player.addScore(10); 
-                        f.dispose(); 
-                    } else { 
-                        if(w.isRunning()) w.stop(); 
-                        JOptionPane.showMessageDialog(f, "Kecepatan!"); 
-                        f.dispose(); 
+                    if (green) {
+                        long r = System.currentTimeMillis() - start;
+                        JOptionPane.showMessageDialog(f, r + " ms! (+10)");
+                        player.addScore(10);
+                        f.dispose();
+                    } else {
+                        if (w.isRunning()) w.stop();
+                        if (s.isRunning()) s.stop();
+                        JOptionPane.showMessageDialog(f, "Kecepatan!");
+                        f.dispose();
                     }
                     System.gc();
                 }
             });
 
-            f.add(p); 
+            f.add(p);
             f.setVisible(true);
 
-            w = new Timer(new Random().nextInt(3000)+1000, e -> { 
-                p.setBackground(Color.GREEN); 
-                start = System.currentTimeMillis(); 
-                green = true; 
-                w.stop(); 
-            }); 
+            w = new Timer(new Random().nextInt(3000) + 1000, e -> {
+                s.stop();
+                p.setBackground(Color.GREEN);
+                start = System.currentTimeMillis();
+                green = true;
+                w.stop();
+            });
             w.start();
-            
-            f.addWindowListener(new WindowAdapter() { 
-                public void windowClosing(WindowEvent e) { 
-                    if(w.isRunning()) w.stop(); 
-                    System.gc(); 
+
+            f.addWindowListener(new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                    if (w.isRunning()) w.stop();
+                    if (s.isRunning()) s.stop();
+                    System.gc();
                 }
             });
         }
